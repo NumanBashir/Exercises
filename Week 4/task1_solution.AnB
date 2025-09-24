@@ -1,0 +1,20 @@
+Protocol: task1
+
+Types: Agent A,S;
+       Number NA,tag;
+       Function pk;
+       Symmetric_key Ktemp;
+
+Knowledge: A: A,S,pk(S),pk(A),inv(pk(A)),tag;
+	   S: A,S,pk(A),pk(S),inv(pk(S)),tag
+
+where A!=S
+
+Actions:
+
+A->S: { { NA, A } inv(pk(A)) } pk(S)
+S->A: {|NA|}Ktemp,
+      {tag,{tag,Ktemp}inv(pk(S))}pk(A)
+
+Goals:
+Ktemp secret between A,S
