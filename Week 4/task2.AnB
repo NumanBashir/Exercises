@@ -1,0 +1,22 @@
+Protocol: task2
+
+Types: Agent A,B,s;
+       Number NA,Payload;
+       Symmetric_key KAB;
+       Function sk,pk
+
+Knowledge: A: A,B,s,pk(s),pk(B),sk(A,s);
+	   s: A,s,pk(s),inv(pk(s)),sk(A,s);
+	   B: A,B,s,pk(s),pk(B),inv(pk(B))
+   where A!=B, A!=s, B!=s
+Actions:
+A->B: {A,B,NA,KAB}pk(B)
+B->A: {|A,B,NA|}KAB
+A->s: {|A,NA|}sk(A,s)
+s->B: {A,NA,s}inv(pk(s))
+B->A: {|A,B,NA,Payload|}KAB
+Goals:
+
+B authenticates A on NA
+A authenticates B on Payload
+Payload secret between A,B

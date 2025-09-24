@@ -1,0 +1,24 @@
+Protocol: task4
+
+Types: Agent A,B,s;
+       Number Payload;
+       Function pk,pw,h;
+
+Knowledge: 
+A: A,B,s,pk(s),pw(A,B),h;
+B: A,B,pw(A,B),pk(B),inv(pk(B)),pk(s),{B,pk(B)}inv(pk(s)),h
+
+Actions:
+
+A->B: {| Payload |}pw(A,B)
+
+Goals:
+
+B authenticates A on Payload
+Payload secret between A,B
+pw(A,B) guessable secret between A,B
+
+
+
+
+

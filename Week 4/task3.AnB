@@ -1,0 +1,22 @@
+Protocol: task3
+
+Types: Agent A,B,hm;
+       Number X,Y,g,M;
+       Function ck,sk
+
+Knowledge: A: A,B,hm,ck(A,hm),sk(A,hm),g;
+	   B: A,B,hm,ck(B,hm),sk(B,hm),g;
+	   hm: A,B,hm,ck(A,hm),sk(A,hm),ck(B,hm),sk(B,hm),g
+
+Actions:
+A->B:  A,B,exp(g,X),{|A,B,exp(g,X)|}ck(A,hm)
+B->hm: {|A,B,exp(g,X),exp(g,Y),
+         {|A,B,exp(g,X)|}ck(A,hm)|}ck(B,hm)
+hm->B: {|B,A,{|B,A,exp(g,X),exp(g,Y)|}sk(A,hm)|}sk(B,hm)
+B->A: exp(g,Y),{|B,A,exp(g,X),exp(g,Y)|}sk(A,hm)
+A->B: {|M|}exp(exp(g,X),Y)
+
+Goals:
+B authenticates A on M
+M secret between A,B
+
