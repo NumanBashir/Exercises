@@ -1,3 +1,5 @@
 pip install sympy
 
 source .venv/bin/activate
+
+test
