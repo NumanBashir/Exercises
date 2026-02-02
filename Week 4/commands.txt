@@ -7,3 +7,4 @@ Example:
 
 ./ofmc x.AnB
 
+./ofmc KeyEx2.AnB --numSess 2

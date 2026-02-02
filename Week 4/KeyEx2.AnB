@@ -21,3 +21,4 @@ KAB secret between A,B,s
 A authenticates s on KAB
 B authenticates s on KAB
 
+# s->A: {| KAB |}sk(A,s), {| KAB |}sk(B,s)
