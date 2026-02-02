@@ -1,0 +1,415 @@
+## task1
+Protocol: task1
+
+Types: Agent A,S;
+       Number NA,tag;
+       Function pk;
+       Symmetric_key Ktemp;
+
+Knowledge: A: A,S,pk(S),pk(A),inv(pk(A)),tag;
+	   S: A,S,pk(A),pk(S),inv(pk(S)),tag
+
+where A!=S
+
+Actions:
+
+A->S: {NA,A}inv(pk(A))   
+S->A: {|NA|}Ktemp,
+      {tag,{tag,Ktemp}inv(pk(S))}pk(A)
+
+Goals:
+Ktemp secret between A,S
+
+## task1 attack trace
+(.venv) (base) numanbashir@Numans-MacBook-Pro Week 4 % ./ofmc task1.AnB
+Open-Source Fixedpoint Model-Checker version 2024
+Verified for 1 sessions
+INPUT:
+   task1.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  secrets
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 89 ms
+  parseTime 0 ms
+  visitedNodes: 116 nodes
+  depth: 3 plies
+
+ATTACK TRACE:
+(x20,1) -> i: {NA(1),x20}_inv(pk(x20))
+i -> (x25,1): {NA(1),i}_inv(pk(i))
+(x25,1) -> i: {|NA(1)|}_Ktemp(2),{tag,{tag,Ktemp(2)}_inv(pk(x25))}_(pk(i))
+i -> (x20,1): {|NA(1)|}_Ktemp(2),{tag,{tag,Ktemp(2)}_inv(pk(x25))}_(pk(x20))
+i can produce secret Ktemp(2)
+
+secret leaked: Ktemp(2)
+
+
+% Reached State:
+% 
+% secrets(Ktemp(2),secrecyset(x20,1,pKtemp),i)
+% contains(secrecyset(x20,1,pKtemp),x20)
+% contains(secrecyset(x20,1,pKtemp),x25)
+% state_rA(x20,2,tag,inv(pk(x20)),pk(x20),pk(x25),x25,inv(pseudonym(x20)),inv(confChCr(x20)),inv(authChCr(x20)),pseudonym(x20),NA(1),{NA(1),x20}_inv(pk(x20)),Ktemp(2),{tag,Ktemp(2)}_inv(pk(x25)),{tag,{tag,Ktemp(2)}_inv(pk(x25))}_(pk(x20)),{|NA(1)|}_Ktemp(2),{|NA(1)|}_Ktemp(2),{tag,{tag,Ktemp(2)}_inv(pk(x25))}_(pk(x20)),1)
+% state_rS(x25,1,tag,inv(pk(x25)),pk(x25),pk(i),i,inv(pseudonym(x25)),inv(confChCr(x25)),inv(authChCr(x25)),pseudonym(x25),NA(1),{NA(1),i}_inv(pk(i)),Ktemp(2),{|NA(1)|}_Ktemp(2),{tag,{tag,Ktemp(2)}_inv(pk(x25))}_(pk(i)),1)
+% state_rA(x31,0,tag,inv(pk(x31)),pk(x31),pk(x25),x25,inv(pseudonym(x31)),inv(confChCr(x31)),inv(authChCr(x31)),pseudonym(x31),2)
+% state_rS(x34,0,tag,inv(pk(x34)),pk(x34),pk(x20),x20,inv(pseudonym(x34)),inv(confChCr(x34)),inv(authChCr(x34)),pseudonym(x34),2)
+% contains(secrecyset(x25,1,pKtemp),x25)
+% contains(secrecyset(x25,1,pKtemp),i)
+% secrets(Ktemp(2),secrecyset(x25,1,pKtemp),i)
+
+## task1 solution
+Protocol: task1
+
+Types: Agent A,S;
+       Number NA,tag;
+       Function pk;
+       Symmetric_key Ktemp;
+
+Knowledge: A: A,S,pk(S),pk(A),inv(pk(A)),tag;
+	   S: A,S,pk(A),pk(S),inv(pk(S)),tag
+
+where A!=S
+
+Actions:
+
+A->S: { { NA, A } inv(pk(A)) } pk(S)
+S->A: {|NA|}Ktemp,
+      {tag,{tag,Ktemp}inv(pk(S))}pk(A)
+
+Goals:
+Ktemp secret between A,S
+
+
+## task2
+Protocol: task2
+
+Types: Agent A,B,s;
+       Number NA,Payload;
+       Symmetric_key KAB;
+       Function sk,pk
+
+Knowledge: A: A,B,s,pk(s),pk(B),sk(A,s);
+	   s: A,s,pk(s),inv(pk(s)),sk(A,s);
+	   B: A,B,s,pk(s),pk(B),inv(pk(B))
+   where A!=B, A!=s, B!=s
+Actions:
+A->B: {A,B,NA,KAB}pk(B)
+B->A: {|A,B,NA|}KAB
+A->s: {|A,NA|}sk(A,s)
+s->B: {A,NA,s}inv(pk(s))
+B->A: {|A,B,NA,Payload|}KAB
+Goals:
+
+B authenticates A on NA
+A authenticates B on Payload
+Payload secret between A,B
+
+
+## task2 attack trace
+Open-Source Fixedpoint Model-Checker version 2024
+Verified for 1 sessions
+INPUT:
+   task2.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  weak_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 309 ms
+  parseTime 0 ms
+  visitedNodes: 476 nodes
+  depth: 5 plies
+
+ATTACK TRACE:
+(x702,1) -> i: {x702,i,NA(1),KAB(1)}_(pk(i))
+i -> (x701,1): {x702,x701,NA(1),x308}_(pk(x701))
+(x701,1) -> i: {|x702,x701,NA(1)|}_x308
+i -> (x702,1): {|x702,i,NA(1)|}_KAB(1)
+(x702,1) -> i: {|x702,NA(1)|}_(sk(x702,s))
+i -> (s,1): {|x702,NA(1)|}_(sk(x702,s))
+(s,1) -> i: {x702,NA(1),s}_inv(pk(s))
+i -> (x701,1): {x702,NA(1),s}_inv(pk(s))
+(x701,1) -> i: {|x702,x701,NA(1),Payload(5)|}_x308
+
+
+% Reached State:
+% 
+% request(x701,x702,pBANA,NA(1),1)
+% state_rB(x701,2,inv(pk(x701)),pk(x701),pk(s),s,x702,inv(pseudonym(x701)),inv(confChCr(x701)),inv(authChCr(x701)),pseudonym(x701),x308,NA(1),{x702,x701,NA(1),x308}_(pk(x701)),{|x702,x701,NA(1)|}_x308,{x702,NA(1),s}_inv(pk(s)),Payload(5),{|x702,x701,NA(1),Payload(5)|}_x308,1)
+% witness(x701,x702,pABPayload,Payload(5))
+% secrets(Payload(5),secrecyset(x701,1,pPayload),i)
+% contains(secrecyset(x701,1,pPayload),x702)
+% contains(secrecyset(x701,1,pPayload),x701)
+% state_rs(s,1,sk(x702,s),inv(pk(s)),pk(s),x702,inv(pseudonym(s)),inv(confChCr(s)),inv(authChCr(s)),pseudonym(s),NA(1),{|x702,NA(1)|}_(sk(x702,s)),{x702,NA(1),s}_inv(pk(s)),1)
+% state_rA(x702,2,sk(x702,s),pk(i),pk(s),s,i,inv(pseudonym(x702)),inv(confChCr(x702)),inv(authChCr(x702)),pseudonym(x702),NA(1),KAB(1),{x702,i,NA(1),KAB(1)}_(pk(i)),{|x702,i,NA(1)|}_KAB(1),{|x702,NA(1)|}_(sk(x702,s)),1)
+% state_rA(x33,0,sk(x33,s),pk(x701),pk(s),s,x701,inv(pseudonym(x33)),inv(confChCr(x33)),inv(authChCr(x33)),pseudonym(x33),2)
+% state_rB(x37,0,inv(pk(x37)),pk(x37),pk(s),s,x38,inv(pseudonym(x37)),inv(confChCr(x37)),inv(authChCr(x37)),pseudonym(x37),2)
+% state_rs(s,0,sk(x36,s),inv(pk(s)),pk(s),x36,inv(pseudonym(s)),inv(confChCr(s)),inv(authChCr(s)),pseudonym(s),2)
+% witness(x702,i,pBANA,NA(1))
+
+## task2 solution
+
+
+## task3
+Protocol: task3
+
+Types: Agent A,B,hm;
+       Number X,Y,g,M;
+       Function ck,sk
+
+Knowledge: A: A,B,hm,ck(A,hm),sk(A,hm),g;
+	   B: A,B,hm,ck(B,hm),sk(B,hm),g;
+	   hm: A,B,hm,ck(A,hm),sk(A,hm),ck(B,hm),sk(B,hm),g
+
+Actions:
+A->B:  A,B,exp(g,X),{|A,B,exp(g,X)|}ck(A,hm)
+B->hm: {|A,B,exp(g,X),exp(g,Y),
+         {|A,B,exp(g,X)|}ck(A,hm)|}ck(B,hm)
+hm->B: {|B,A,{|B,A,exp(g,X),exp(g,Y)|}sk(A,hm)|}sk(B,hm)
+B->A: exp(g,Y),{|B,A,exp(g,X),exp(g,Y)|}sk(A,hm)
+A->B: {|M|}exp(exp(g,X),Y)
+
+Goals:
+B authenticates A on M
+M secret between A,B
+
+
+
+## task3 attack trace
+Open-Source Fixedpoint Model-Checker version 2024
+Verified for 1 sessions
+INPUT:
+   task3.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  weak_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 1469 ms
+  parseTime 0 ms
+  visitedNodes: 2655 nodes
+  depth: 6 plies
+
+ATTACK TRACE:
+(x802,1) -> i: x802,x801,exp(g,X(1)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm))
+i -> (x801,1): x802,x801,g,x308
+(x801,1) -> i: {|x802,x801,g,exp(g,Y(2)),x308|}_(ck(x801,hm))
+i -> (x801,2): x802,x801,exp(g,X(1)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm))
+(x801,2) -> i: {|x802,x801,exp(g,X(1)),exp(g,Y(3)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm))|}_(ck(x801,hm))
+i -> (hm,1): {|x802,x801,exp(g,X(1)),exp(g,Y(3)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm))|}_(ck(x801,hm))
+(hm,1) -> i: {|x801,x802,{|x801,x802,exp(g,X(1)),exp(g,Y(3))|}_(sk(x802,hm))|}_(sk(x801,hm))
+i -> (x801,1): {|x801,x802,{|x801,x802,exp(g,X(1)),exp(g,Y(3))|}_(sk(x802,hm))|}_(sk(x801,hm))
+(x801,1) -> i: exp(g,Y(2)),{|x801,x802,exp(g,X(1)),exp(g,Y(3))|}_(sk(x802,hm))
+i -> (x801,1): {|x711|}_(exp(g,Y(2)))
+
+
+% Reached State:
+% 
+% request(x801,x802,pBAM,x711,1)
+% secrets(x711,secrecyset(x801,1,pM),i)
+% contains(secrecyset(x801,1,pM),x802)
+% contains(secrecyset(x801,1,pM),x801)
+% state_rB(x801,3,g,sk(x801,hm),ck(x801,hm),hm,x802,inv(pseudonym(x801)),inv(confChCr(x801)),inv(authChCr(x801)),pseudonym(x801),x308,g,x802,x801,g,x308,Y(2),{|x802,x801,g,exp(g,Y(2)),x308|}_(ck(x801,hm)),{|x801,x802,exp(g,X(1)),exp(g,Y(3))|}_(sk(x802,hm)),{|x801,x802,{|x801,x802,exp(g,X(1)),exp(g,Y(3))|}_(sk(x802,hm))|}_(sk(x801,hm)),exp(g,Y(2)),{|x801,x802,exp(g,X(1)),exp(g,Y(3))|}_(sk(x802,hm)),exp(g,Y(2)),x711,{|x711|}_(exp(g,Y(2))),1)
+% state_rA(x35,0,g,sk(x35,hm),ck(x35,hm),hm,x37,inv(pseudonym(x35)),inv(confChCr(x35)),inv(authChCr(x35)),pseudonym(x35),2)
+% state_rhm(hm,0,g,sk(x40,hm),ck(x40,hm),sk(x41,hm),ck(x41,hm),x40,x41,inv(pseudonym(hm)),inv(confChCr(hm)),inv(authChCr(hm)),pseudonym(hm),2)
+% state_rB(x801,1,g,sk(x801,hm),ck(x801,hm),hm,x802,inv(pseudonym(x801)),inv(confChCr(x801)),inv(authChCr(x801)),pseudonym(x801),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm)),exp(g,X(1)),x802,x801,exp(g,X(1)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm)),Y(3),{|x802,x801,exp(g,X(1)),exp(g,Y(3)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm))|}_(ck(x801,hm)),2)
+% state_rA(x802,1,g,sk(x802,hm),ck(x802,hm),hm,x801,inv(pseudonym(x802)),inv(confChCr(x802)),inv(authChCr(x802)),pseudonym(x802),X(1),x802,x801,exp(g,X(1)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm)),1)
+% state_rhm(hm,1,g,sk(x801,hm),ck(x801,hm),sk(x802,hm),ck(x802,hm),x801,x802,inv(pseudonym(hm)),inv(confChCr(hm)),inv(authChCr(hm)),pseudonym(hm),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm)),exp(g,Y(3)),exp(g,X(1)),{|x802,x801,exp(g,X(1)),exp(g,Y(3)),{|x802,x801,exp(g,X(1))|}_(ck(x802,hm))|}_(ck(x801,hm)),{|x801,x802,{|x801,x802,exp(g,X(1)),exp(g,Y(3))|}_(sk(x802,hm))|}_(sk(x801,hm)),1)
+
+
+## task3 solution
+Protocol: task3_fixed
+
+Types: Agent A,B,hm;
+       Number X,Y,NB,g,M;
+       Function ck,sk;
+
+Knowledge: A: A,B,hm,ck(A,hm),sk(A,hm),g;
+       B: A,B,hm,ck(B,hm),sk(B,hm),g;
+hm: A,B,hm,ck(A,hm),sk(A,hm),ck(B,hm),sk(B,hm),g;
+
+Actions:
+A->B:  A,B,exp(g,X),{|A,B,exp(g,X)|}ck(A,hm)
+B->hm: {|A,B,exp(g,X),exp(g,Y),NB,
+          {|A,B,exp(g,X)|}ck(A,hm)|}ck(B,hm)
+hm->B: {| exp(g,Y), NB, {|A,B,exp(g,X),exp(g,Y),NB|}sk(A,hm) |}sk(B,hm)
+B->A: exp(g,Y), NB, {|A,B,exp(g,X),exp(g,Y),NB|}sk(A,hm)
+A->B: {|M|}exp(exp(g,X),Y)
+
+Goals:
+B authenticates A on M
+M secret between A,B
+
+
+
+## task4
+Protocol: task4
+
+Types: Agent A,B,s;
+       Number Payload;
+       Function pk,pw,h;
+
+Knowledge: 
+A: A,B,s,pk(s),pw(A,B),h;
+B: A,B,pw(A,B),pk(B),inv(pk(B)),pk(s),{B,pk(B)}inv(pk(s)),h
+
+Actions:
+
+A->B: {| Payload |}pw(A,B)
+
+Goals:
+
+B authenticates A on Payload
+Payload secret between A,B
+pw(A,B) guessable secret between A,B
+
+
+## task4 attack trace
+Open-Source Fixedpoint Model-Checker version 2024
+INPUT:
+   task4.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  guesswhat
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 12 ms
+  parseTime 0 ms
+  visitedNodes: 1 nodes
+  depth: 1 plies
+
+ATTACK TRACE:
+(x20,1) -> i: {|Payload(1)|}_(pw(x20,x25))
+i can produce secret guessPW
+
+secret leaked: guessPW
+
+
+% Reached State:
+% 
+% guessChal(guessPW,guessSecrecyset(x20,1,ppwAB),i)
+% contains(secrecyset(x20,1,pPayload),x25)
+% contains(secrecyset(x20,1,pPayload),x20)
+% secrets(Payload(1),secrecyset(x20,1,pPayload),i)
+% witness(x20,x25,pBAPayload,Payload(1))
+% state_rA(x20,1,h,pw(x20,x25),pk(s),s,x25,inv(pseudonym(x20)),inv(confChCr(x20)),inv(authChCr(x20)),pseudonym(x20),Payload(1),{|Payload(1)|}_(pw(x20,x25)),1)
+% contains(guessSecrecyset(x20,1,ppwAB),x20)
+% contains(guessSecrecyset(x20,1,ppwAB),x25)
+% state_rB(x31,0,h,{x31,pk(x31)}_inv(pk(s)),pk(s),inv(pk(x31)),pk(x31),pw(x32,x31),x32,inv(pseudonym(x31)),inv(confChCr(x31)),inv(authChCr(x31)),pseudonym(x31),1)
+
+
+## task4 solution
+
+
+## nsl
+
+## nsl attack trace
+
+## nsl solution
+Protocol: NSL
+
+Types: Agent A,B;
+       Number NA,NB;
+       Function pk
+
+Knowledge: A: A,pk,inv(pk(A)),B;
+	   B: B,pk,inv(pk(B))
+
+Actions:
+# A creates NA
+A->B: {NA,A}(pk(B))
+# B creates NB
+B->A: {NA,NB,B}(pk(A))
+A->B: {NB}(pk(B))
+
+Goals:
+
+B authenticates A on NA
+A authenticates B on NB
+NA secret between A,B
+NB secret between A,B
+
+
+## nspk
+Protocol: NSPK
+
+Types: Agent A,B;
+       Number NA,NB;
+       Function pk
+
+Knowledge: A: A,pk,inv(pk(A)),B;
+	   B: B,pk,inv(pk(B))
+
+Actions:
+# A creates NA
+A->B: {NA,A}(pk(B))
+# B creates NB
+B->A: {NA,NB}(pk(A))
+A->B: {NB}(pk(B))
+
+Goals:
+
+B authenticates A on NA
+A authenticates B on NB
+NA secret between A,B
+NB secret between A,B
+
+
+## nspk attack trace
+Open-Source Fixedpoint Model-Checker version 2024
+INPUT:
+   nspk.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  weak_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 15 ms
+  parseTime 0 ms
+  visitedNodes: 18 nodes
+  depth: 4 plies
+
+ATTACK TRACE:
+(x602,1) -> i: {NA(1),x602}_(pk(i))
+i -> (x601,1): {NA(1),x602}_(pk(x601))
+(x601,1) -> i: {NA(1),NB(2)}_(pk(x602))
+i -> (x602,1): {NA(1),NB(2)}_(pk(x602))
+(x602,1) -> i: {NB(2)}_(pk(i))
+i -> (x601,1): {NB(2)}_(pk(x601))
+
+
+% Reached State:
+% 
+% request(x601,x602,pBANA,NA(1),1)
+% secrets(NA(1),secrecyset(x601,1,pNA),i)
+% contains(secrecyset(x601,1,pNA),x602)
+% contains(secrecyset(x601,1,pNA),x601)
+% secrets(NB(2),secrecyset(x601,1,pNB),i)
+% contains(secrecyset(x601,1,pNB),x602)
+% contains(secrecyset(x601,1,pNB),x601)
+% state_rB(x601,2,inv(pk(x601)),pk,inv(pseudonym(x601)),inv(confChCr(x601)),inv(authChCr(x601)),pseudonym(x601),x602,NA(1),{NA(1),x602}_(pk(x601)),NB(2),{NA(1),NB(2)}_(pk(x602)),{NB(2)}_(pk(x601)),1)
+% state_rA(x602,2,i,inv(pk(x602)),pk,inv(pseudonym(x602)),inv(confChCr(x602)),inv(authChCr(x602)),pseudonym(x602),NA(1),{NA(1),x602}_(pk(i)),NB(2),{NA(1),NB(2)}_(pk(x602)),{NB(2)}_(pk(i)),1)
+% witness(x602,i,pBANA,NA(1))
+% witness(x601,x602,pABNB,NB(2))
+% contains(secrecyset(x602,1,pNB),i)
+% contains(secrecyset(x602,1,pNB),x602)
+% secrets(NB(2),secrecyset(x602,1,pNB),i)
+% contains(secrecyset(x602,1,pNA),i)
+% contains(secrecyset(x602,1,pNA),x602)
+% secrets(NA(1),secrecyset(x602,1,pNA),i)
+% request(x602,i,pABNB,NB(2),1)
+
+
+## nspk solution
