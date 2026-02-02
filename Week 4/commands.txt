@@ -1,2 +1,9 @@
+Make sure to cd into /Week 4
+This is here all the executables are
+
+For course 02244 a new folder is created, just to make AnB easier to use and execute
+Example:
+./ofmc 02244Logic/KeyEx.AnB  
+
 ./ofmc x.AnB
 
