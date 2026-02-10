@@ -1,0 +1,16 @@
+Protocol: StandardError
+Types:
+  Agent A, B;
+  Number Payload,tag;
+  Function pk,sigk;
+Knowledge:
+  A: A, B, s, pk(A),inv(pk(A)),pk(B),sigk(A),inv(sigk(A)),sigk(B),tag;
+  B: A, B, s, pk(A),pk(B),inv(pk(B)),sigk(A),sigk(B),inv(sigk(B)),tag;
+  #where A!=B
+Actions:
+  A -> B: A,B,{tag, {B,Payload}inv(sigk(A)) }pk(B)
+
+Goals:
+  B weakly authenticates A on Payload
+  Payload secret between A,B
+  

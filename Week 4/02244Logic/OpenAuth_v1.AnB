@@ -1,0 +1,25 @@
+Protocol: OpenAuth_v1 
+
+Types:
+  Agent A,B,P,IdP;
+  Number R,Right;
+  Constant photo;
+  Function pk;
+
+Knowledge:
+  A: A,B,P,IdP,pk(IdP);
+  P: A,B,P,IdP,pk(IdP),pk(P),inv(pk(P));
+  B: A,B,P,IdP,pk(IdP),pk(P),photo;
+  IdP: A,B,P,IdP,pk(IdP),inv(pk(IdP)),pk(P),pk(B);
+
+Actions:
+  A -> IdP: A,P,B,R,Right 
+  IdP -> A: {A,P,B,R,Right}inv(pk(IdP)) 
+  A -> P: {A,P,B,R,Right}inv(pk(IdP)) 
+  P -> B: {A,P,B,R,Right}inv(pk(IdP)) 
+  B -> P: {photo}pk(P) 
+
+Goals:
+  photo secret between B,P 
+  B authenticates IdP on A,P,B,R,Right 
+  P authenticates IdP on A,P,B,R,Right 
