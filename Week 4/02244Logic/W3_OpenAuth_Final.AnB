@@ -1,0 +1,26 @@
+Protocol: W3_OpenAuth_FinalWeek3 
+
+Types: 
+  Agent a,b,p,idp; 
+  Number R,Right,Na; 
+  Constant photo; 
+  Function pk,h,pwd; 
+
+Knowledge: 
+  a: a,b,p,idp, pk(idp), pk(b), pk(p), h, pwd(a,idp); 
+  p: a,b,p,idp, pk(idp), pk(p), inv(pk(p)); 
+  b: a,b,p,idp, pk(idp), pk(p), photo; 
+  idp: a,b,p,idp, pk(idp), inv(pk(idp)), pk(p), pk(b), h, pwd(a,idp); 
+
+Actions: 
+  a -> idp: a,p,b,R,Right 
+  idp -> a: Na 
+  a -> idp: h(pwd(a,idp),Na,a,p,b,R,Right) 
+  idp -> a: {a,p,b,R,Right}inv(pk(idp)) 
+  a -> p: {a,p,b,R,Right}inv(pk(idp)) 
+  p -> b: {a,p,b,R,Right}inv(pk(idp)) 
+  b -> p: {photo}pk(p) 
+
+Goals: 
+  pwd(a,idp) secret between a,idp 
+  idp authenticates a on Na 
