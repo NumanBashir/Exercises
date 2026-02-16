@@ -1,0 +1,28 @@
+Protocol: W3_OpenAuth
+
+Types:
+  Agent A,B,P,IdP;
+  Number R,Right,Na;
+  Constant photo;
+  Function pk,pwd;
+
+Knowledge:
+  A: A,B,P,IdP,pk(IdP),pwd(A,IdP);
+  P: A,B,P,IdP,pk(IdP),pk(P),inv(pk(P));
+  B: A,B,P,IdP,pk(IdP),pk(P),photo;
+  IdP: A,B,P,IdP,pk(IdP),inv(pk(IdP)),pk(P),pk(B),pwd(A,IdP);
+
+Actions:
+  A -> IdP: A,Na
+  IdP -> A: Na
+  A -> IdP: pwd(A,IdP)
+  IdP -> A: {A,P,B,R,Right}inv(pk(IdP))
+  A -> P:  {A,P,B,R,Right}inv(pk(IdP))
+  P -> B:  {A,P,B,R,Right}inv(pk(IdP))
+  B -> P:  {photo}pk(P)
+
+
+Goals:
+  photo secret between B,P 
+  B authenticates IdP on A,P,B,R,Right 
+  P authenticates IdP on A,P,B,R,Right 
