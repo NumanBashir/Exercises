@@ -1,0 +1,27 @@
+Protocol: W4_OpenAuth_Typed
+
+Types:
+  Agent A,B,P,IdP;
+  Number R,Right,Na;
+  Constant photo;
+  Function pk,h,pwd;
+  Function req,chal,resp,tok,res;
+
+Knowledge:
+  A: A,B,P,IdP, pk(IdP), h, pwd(A,IdP), req,chal,resp,tok,res;
+  P: A,B,P,IdP, pk(IdP), pk(P), inv(pk(P)), req,chal,resp,tok,res;
+  B: A,B,P,IdP, pk(IdP), pk(P), photo, req,chal,resp,tok,res;
+  IdP: A,B,P,IdP, pk(IdP), inv(pk(IdP)), pk(P), pk(B), h, pwd(A,IdP), req,chal,resp,tok,res;
+
+Actions:
+  A -> IdP: req(A,P,B,R,Right)
+  IdP -> A: chal(Na)
+  A -> IdP: resp(h(pwd(A,IdP),chal(Na),req(A,P,B,R,Right)))
+  IdP -> A: {tok(req(A,P,B,R,Right))}inv(pk(IdP))
+  A -> P: {tok(req(A,P,B,R,Right))}inv(pk(IdP))
+  P -> B: {tok(req(A,P,B,R,Right))}inv(pk(IdP))
+  B -> P: {res(photo)}pk(P)
+
+Goals:
+  pwd(A,IdP) secret between A,IdP
+  IdP authenticates A on chal(Na)
