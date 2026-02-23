@@ -1,0 +1,18 @@
+Protocol: W4_KeyQuery
+
+Types:
+  Agent A,IdP,X;
+  Constant kx;
+  Function pk;
+  Function keyreq,keyresp;
+
+Knowledge:
+  A: A,IdP,X, pk(IdP), keyreq,keyresp;
+  IdP: A,IdP,X, pk(IdP), inv(pk(IdP)), kx, keyreq,keyresp;
+
+Actions:
+  A -> IdP: keyreq(A,X)
+  IdP -> A: {keyresp(X,kx)}inv(pk(IdP))
+
+Goals:
+  kx secret between IdP
