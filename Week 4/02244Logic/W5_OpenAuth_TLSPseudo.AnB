@@ -1,0 +1,28 @@
+Protocol: W5_OpenAuth_TLSPseudo
+
+Types:
+  Agent A,B,P,IdP;
+  Number R,Right,Na;
+  Constant photo;
+  Function h,pwd;
+  Function req,chal,resp,tok,res;
+
+Knowledge:
+  A: A,B,P,IdP, h, pwd(A,IdP), req,chal,resp,tok,res;
+  P: A,B,P,IdP, req,chal,resp,tok,res;
+  B: A,B,P,IdP, photo, req,chal,resp,tok,res;
+  IdP: A,B,P,IdP, h, pwd(A,IdP), req,chal,resp,tok,res;
+
+Actions:
+  [A] *->* IdP: req(A,P,B,R,Right)
+  IdP *->* [A]: chal(Na)
+  [A] *->* IdP: resp(h(pwd(A,IdP),chal(Na),req(A,P,B,R,Right)))
+  IdP *->* [A]: tok(req(A,P,B,R,Right))
+  A -> P: tok(req(A,P,B,R,Right))
+  [P] *->* B: tok(req(A,P,B,R,Right))
+  B *->* [P]: res(photo)
+
+Goals:
+  pwd(A,IdP) secret between A,IdP
+  IdP authenticates A on chal(Na)
+  res(photo) secret between B,P
